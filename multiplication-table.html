@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1 至 12 乘數表 互動學習</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", "PingFang HK", Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .nav button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .nav button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        .nav button.active {
+            background-color: #27ae60;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        #content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            min-height: 400px;
+        }
+        table {
+            border-collapse: collapse;
+            margin: 20px auto;
+            font-size: 18px;
+        }
+        th, td {
+            border: 1px solid #bdc3c7;
+            padding: 12px 16px;
+            text-align: center;
+            width: 60px;
+        }
+        th {
+            background-color: #ecf0f1;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        td {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        td:hover {
+            background-color: #d5f5e3;
+            transform: scale(1.1);
+            font-weight: bold;
+        }
+        .highlight {
+            background-color: #a9dfbf !important;
+        }
+        .practice-container, .quiz-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .times-table {
+            font-size: 22px;
+            line-height: 2.2;
+        }
+        .answer {
+            font-weight: bold;
+            color: #27ae60;
+        }
+        .quiz-item {
+            margin: 20px 0;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .quiz-item input {
+            width: 100px;
+            font-size: 24px;
+            padding: 8px;
+            text-align: center;
+        }
+        .feedback {
+            font-size: 20px;
+            margin-top: 5px;
+            min-height: 30px;
+        }
+        .correct { color: #27ae60; }
+        .wrong { color: #e74c3c; }
+        .score {
+            font-size: 28px;
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+        }
+        .hidden { display: none; }
+        button.action {
+            padding: 12px 30px;
+            font-size: 18px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        button.action:hover {
+            background-color: #219a52;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 1 至 12 乘數表 互動學習</h1>
+        <p class="subtitle">適合小學生練習乘數表 - 完整表格、練習、隨機測驗</p>
+
+        <div class="nav">
+            <button id="btn-table" class="active" onclick="showSection('table')">完整乘數表</button>
+            <button id="btn-practice" onclick="showSection('practice')">練習指定倍數</button>
+            <button id="btn-quiz" onclick="showSection('quiz')">隨機測驗</button>
+        </div>
+
+        <div id="content">
+            <!-- 完整表格 -->
+            <div id="table-section">
+                <p style="text-align:center; color:#7f8c8d;">滑鼠移動到格子上會放大顯示</p>
+                <div id="multiplication-table"></div>
+            </div>
+
+            <!-- 練習模式 -->
+            <div id="practice-section" class="hidden">
+                <div class="practice-container">
+                    <label style="font-size:18px;">選擇要練習的倍數：</label>
+                    <select id="select-number" style="font-size:18px; padding:8px; margin:0 15px;">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>
+                    <button onclick="showTimesTable()" class="action">顯示乘數表</button>
+                    
+                    <div id="practice-result" class="times-table"></div>
+                    
+                    <div style="margin-top:20px;">
+                        <label><input type="checkbox" id="show-answers" checked onchange="toggleAnswers()"> 顯示答案</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 測驗模式 -->
+            <div id="quiz-section" class="hidden">
+                <div class="quiz-container">
+                    <div style="text-align:center; margin-bottom:30px;">
+                        <button onclick="startQuiz()" class="action">開始新測驗 (10 題)</button>
+                    </div>
+                    
+                    <div id="quiz-questions"></div>
+                    
+                    <div style="text-align:center;">
+                        <button id="submit-btn" onclick="submitQuiz()" class="action hidden">提交答案</button>
+                    </div>
+                    
+                    <div id="quiz-result" class="score hidden"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestions = [];
+
+        function createMultiplicationTable() {
+            const container = document.getElementById('multiplication-table');
+            container.innerHTML = '';
+            
+            const table = document.createElement('table');
+            
+            // 表頭
+            let thead = '<tr><th>×</th>';
+            for (let i = 1; i <= 12; i++) {
+                thead += `<th>${i}</th>`;
+            }
+            thead += '</tr>';
+            
+            // 內容
+            let tbody = '';
+            for (let row = 1; row <= 12; row++) {
+                tbody += `<tr><th>${row}</th>`;
+                for (let col = 1; col <= 12; col++) {
+                    tbody += `<td data-row="${row}" data-col="${col}">${row * col}</td>`;
+                }
+                tbody += '</tr>';
+            }
+            
+            table.innerHTML = thead + tbody;
+            container.appendChild(table);
+            
+            // 添加滑鼠懸停效果
+            const cells = table.querySelectorAll('td');
+            cells.forEach(cell => {
+                cell.addEventListener('mouseenter', function() {
+                    const r = parseInt(this.dataset.row);
+                    const c = parseInt(this.dataset.col);
+                    highlightRowAndCol(r, c);
+                });
+                
+                cell.addEventListener('mouseleave', function() {
+                    removeHighlights();
+                });
+            });
+        }
+
+        function highlightRowAndCol(row, col) {
+            removeHighlights();
+            const cells = document.querySelectorAll('td');
+            cells.forEach(cell => {
+                if (parseInt(cell.dataset.row) === row || parseInt(cell.dataset.col) === col) {
+                    cell.classList.add('highlight');
+                }
+            });
+        }
+
+        function removeHighlights() {
+            document.querySelectorAll('td').forEach(cell => {
+                cell.classList.remove('highlight');
+            });
+        }
+
+        function showSection(section) {
+            // 切換按鈕狀態
+            document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
+            
+            if (section === 'table') {
+                document.getElementById('btn-table').classList.add('active');
+            } else if (section === 'practice') {
+                document.getElementById('btn-practice').classList.add('active');
+            } else {
+                document.getElementById('btn-quiz').classList.add('active');
+            }
+            
+            // 切換內容
+            document.getElementById('table-section').classList.add('hidden');
+            document.getElementById('practice-section').classList.add('hidden');
+            document.getElementById('quiz-section').classList.add('hidden');
+            
+            document.getElementById(section + '-section').classList.remove('hidden');
+            
+            if (section === 'quiz') {
+                document.getElementById('submit-btn').classList.add('hidden');
+                document.getElementById('quiz-result').classList.add('hidden');
+                document.getElementById('quiz-questions').innerHTML = '';
+            }
+        }
+
+        function showTimesTable() {
+            const num = parseInt(document.getElementById('select-number').value);
+            const container = document.getElementById('practice-result');
+            let html = `<h2 style="text-align:center; color:#27ae60;">${num} 的乘數表</h2>`;
+            
+            for (let i = 1; i <= 12; i++) {
+                const product = num * i;
+                html += `<div>${num} × ${i} = <span class="answer">${product}</span></div>`;
+            }
+            
+            container.innerHTML = html;
+            
+            // 自動勾選顯示答案
+            document.getElementById('show-answers').checked = true;
+        }
+
+        function toggleAnswers() {
+            const show = document.getElementById('show-answers').checked;
+            const answers = document.querySelectorAll('.answer');
+            answers.forEach(ans => {
+                ans.style.display = show ? 'inline' : 'none';
+            });
+        }
+
+        function startQuiz() {
+            currentQuestions = [];
+            const questionsDiv = document.getElementById('quiz-questions');
+            questionsDiv.innerHTML = '';
+            
+            for (let i = 0; i < 10; i++) {
+                const a = Math.floor(Math.random() * 12) + 1;
+                const b = Math.floor(Math.random() * 12) + 1;
+                const answer = a * b;
+                
+                currentQuestions.push({a, b, answer});
+                
+                const qDiv = document.createElement('div');
+                qDiv.className = 'quiz-item';
+                qDiv.innerHTML = `
+                    <span><strong>${a}</strong> × <strong>${b}</strong> = </span>
+                    <input type="number" id="answer-${i}" min="0" autocomplete="off">
+                    <span class="feedback" id="feedback-${i}"></span>
+                `;
+                questionsDiv.appendChild(qDiv);
+            }
+            
+            document.getElementById('submit-btn').classList.remove('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+        }
+
+        function submitQuiz() {
+            let correctCount = 0;
+            
+            currentQuestions.forEach((q, index) => {
+                const userInput = parseInt(document.getElementById(`answer-${index}`).value);
+                const feedbackEl = document.getElementById(`feedback-${index}`);
+                
+                if (userInput === q.answer) {
+                    correctCount++;
+                    feedbackEl.textContent = '✅ 正確';
+                    feedbackEl.className = 'feedback correct';
+                } else {
+                    feedbackEl.textContent = `❌ 正確答案是 ${q.answer}`;
+                    feedbackEl.className = 'feedback wrong';
+                }
+                
+                document.getElementById(`answer-${index}`).disabled = true;
+            });
+            
+            const score = Math.round((correctCount / 10) * 100);
+            const resultDiv = document.getElementById('quiz-result');
+            
+            let comment = '';
+            if (score >= 90) comment = '太棒了！👏';
+            else if (score >= 70) comment = '做得很好！👍';
+            else if (score >= 50) comment = '繼續努力！💪';
+            else comment = '多練習就會進步！📚';
+            
+            resultDiv.innerHTML = `
+                <div>你的得分：<strong>${score}</strong> 分</div>
+                <div style="font-size:24px; margin:15px 0;">${comment}</div>
+                <div>答對了 ${correctCount} 題 / 10 題</div>
+            `;
+            resultDiv.classList.remove('hidden');
+            
+            document.getElementById('submit-btn').classList.add('hidden');
+        }
+
+        // 初始化
+        window.onload = function() {
+            createMultiplicationTable();
+        };
+    </script>
+</body>
+</html>
